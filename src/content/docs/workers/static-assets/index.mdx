@@ -81,17 +81,26 @@ By adding an [**assets binding**](/workers/static-assets/binding/#binding), you 
 // index.js
 
 export default {
-	async fetch(request, env) {
-		const url = new URL(request.url);
+  async fetch(request) {
+    // URL da sua API no HostGator (substitua pela sua)
+    const API_URL = 'https://api.syncnf.com.br';
 
-		if (url.pathname.startsWith("/api/")) {
-			return new Response(JSON.stringify({ name: "Cloudflare" }), {
-				headers: { "Content-Type": "application/json" },
-			});
-		}
+    // Modifica a requisição para apontar para sua API
+    const newRequest = new Request(API_URL, request);
 
-		return env.ASSETS.fetch(request);
-	},
+    // Adiciona headers para evitar bloqueio do ModSecurity
+    newRequest.headers.set('Accept', 'application/json');
+    newRequest.headers.set('Content-Type', 'application/json');
+    newRequest.headers.set('User-Agent', 'Cloudflare-Worker');
+
+    // Encaminha a requisição e retorna a resposta
+    try {
+      const response = await fetch(newRequest);
+      return response;
+    } catch (error) {
+      return new Response('Erro ao acessar a API: ' + error.message, { status: 500 });
+    }
+  }
 };
 ```
 
