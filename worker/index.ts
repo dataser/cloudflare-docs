@@ -1,8 +1,5 @@
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { generateRedirectsEvaluator } from "redirects-in-workers";
-import redirectsFileContents from "../dist/__redirects";
-
-import { htmlToMarkdown } from "../src/util/markdown";
 
 const redirectsEvaluator = generateRedirectsEvaluator(redirectsFileContents, {
 	maxLineLength: 10_000, // Usually 2_000
